@@ -12,10 +12,14 @@
             "*": [
                 "node_modules/*",
                 "src/types/*"
+            ],
+            "brain.js": [
+                "node_modules/brain.js/*"
             ]
         }
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "src/types/globals.d.ts"
     ]
 }
