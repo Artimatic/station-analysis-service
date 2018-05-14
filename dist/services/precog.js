@@ -7,29 +7,71 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const brain = __importStar(require("brain.js"));
+const neataptic = __importStar(require("neataptic"));
+const network = new neataptic.architect.LSTM(1, 12, 1);
+;
 class Precog {
-    constructor() { }
-    train() {
-        // fibonacci
-        const fibonacci = [
-            { input: [1], output: [1] },
-            { input: [2], output: [1] }
-        ];
-        for (let i = 2; i <= 50; i++) {
-            const tmp = fibonacci.slice(-2);
-            fibonacci.push({ input: [i], output: [(tmp[0].output[0] + tmp[1].output[0])] });
+    constructor() {
+        this.trainingData = [];
+    }
+    run() {
+        let prediction;
+        let counter = { heads: 0, tails: 0, guesses: 0, correct: 0 };
+        for (let i = 0; i < 1000; i++) {
+            let coinSide = this.flip();
+            if (prediction !== undefined) {
+                counter.guesses++;
+                if (coinSide === prediction) {
+                    counter.correct++;
+                }
+            }
+            if (coinSide) {
+                counter.heads++;
+            }
+            else {
+                counter.tails++;
+            }
+            prediction = this.addSet(coinSide);
         }
-        const net = new brain.recurrent.LSTM();
-        net.train(fibonacci.slice(0, -1), {
-            errorThresh: 0.005,
-            iterations: 200,
-            log: true,
-            logPeriod: 10,
-            learningRate: 0.3 // learning rate
+        console.log(`heads: ${counter.heads}, 
+        tails: ${counter.tails}, 
+        correct: ${counter.guesses},
+        guesses: ${counter.correct},
+        ratio: ${counter.correct / counter.guesses}`);
+    }
+    flip() {
+        return Math.round(Math.random());
+    }
+    predict() {
+        let output;
+        // Iterate over previous sets to get into the 'flow'
+        for (var i in this.trainingData) {
+            let input = this.trainingData[i].input;
+            output = Math.round(network.activate([input]));
+        }
+        // Activate network with previous output
+        const input = output;
+        return Math.round(network.activate([input]));
+    }
+    addSet(side) {
+        let predicted;
+        if (this.previous != null) {
+            this.trainingData.push({ input: [this.previous], output: [side] });
+            this.train();
+            predicted = this.predict();
+        }
+        this.previous = side;
+        return predicted;
+    }
+    train() {
+        // Train the network, setting clue to true is the key to the solution
+        network.train(this.trainingData, {
+            log: 500,
+            iterations: 5000,
+            error: 0.03,
+            clear: true,
+            rate: 0.05,
         });
-        console.log(fibonacci);
-        return net.run([51]);
     }
 }
 exports.default = new Precog();

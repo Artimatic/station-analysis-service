@@ -1,34 +1,76 @@
-import * as brain from 'brain.js';
+import * as neataptic from 'neataptic';
+
+const network = new neataptic.architect.LSTM(1, 12, 1);;
 
 class Precog {
+    previous: any;
+    trainingData: any[] = [];
     constructor() { }
 
-    public train(): any {
-        // fibonacci
-        const fibonacci = [
-            { input: [1], output: [1] },
-            { input: [2], output: [1] }
-        ];
+    public run(): any {
+        let prediction;
+        let counter = {heads: 0, tails: 0, guesses: 0, correct: 0};
+        for(let i = 0; i < 1000; i++) {
+            let coinSide = this.flip();
+            if(prediction !== undefined) {
+                counter.guesses++;
+                if(coinSide === prediction) {
+                    counter.correct++;
+                }
+            }
 
-        for (let i = 2; i <= 50; i++) {
-            const tmp = fibonacci.slice(-2);
+            if(coinSide) {
+                counter.heads++;
+            } else {
+                counter.tails++;
+            }
+            prediction = this.addSet(coinSide);
+        }
+        console.log(`heads: ${counter.heads}, 
+        tails: ${counter.tails}, 
+        correct: ${counter.guesses},
+        guesses: ${counter.correct},
+        ratio: ${counter.correct/counter.guesses}`);
+    }
 
-            fibonacci.push({ input: [i], output: [(tmp[0].output[0] + tmp[1].output[0])] });
+    private flip(): number {
+        return Math.round(Math.random());
+    } 
+
+    private predict() {
+        let output;
+        // Iterate over previous sets to get into the 'flow'
+        for (var i in this.trainingData) {
+            let input = this.trainingData[i].input;
+            output = Math.round(network.activate([input]));
         }
 
-        const net = new brain.recurrent.LSTM();
+        // Activate network with previous output
+        const input = output;
+        return Math.round(network.activate([input]))
+    }
 
-        net.train(fibonacci.slice(0, -1), {
-            errorThresh: 0.005,  // error threshold to reach
-            iterations: 200,   // maximum training iterations
-            log: true,           // console.log() progress periodically
-            logPeriod: 10,       // number of iterations between logging
-            learningRate: 0.3    // learning rate
+    private addSet(side: any): any {
+        let predicted;
+        if (this.previous != null) {
+            this.trainingData.push({ input: [this.previous], output: [side] });
+            this.train();
+            predicted = this.predict();
+        }
+
+        this.previous = side;
+        return predicted;
+    }
+
+    private train() {
+        // Train the network, setting clue to true is the key to the solution
+        network.train(this.trainingData, {
+            log: 0,
+            iterations: 5000,
+            error: 0.03,
+            clear: true,
+            rate: 0.05,
         });
-
-        console.log(fibonacci);
-
-        return net.run([51]);
     }
 }
 

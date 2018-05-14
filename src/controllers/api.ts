@@ -10,6 +10,6 @@ import Precog from "./../services/precog";
  * List of API examples.
  */
 export let getApi = (req: Request, res: Response) => {
-  const results = Precog.train();
+  const results = Precog.run();
   res.send(results);
 };

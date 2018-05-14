@@ -9,7 +9,7 @@ const precog_1 = __importDefault(require("./../services/precog"));
  * List of API examples.
  */
 exports.getApi = (req, res) => {
-    const results = precog_1.default.train();
+    const results = precog_1.default.run();
     res.send(results);
 };
 //# sourceMappingURL=api.js.map
