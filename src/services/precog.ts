@@ -29,18 +29,23 @@ class Precog {
             if (trainingData[i]) {
                 const actual = trainingData[i].output;
                 const input = trainingData[i].input;
-                if (actual && input) {
+                if (input) {
                     const rawPrediction = network.activate(input);
                     const prediction = this.roundPrediction(rawPrediction[0], rawPrediction[1]);
 
-                    if (prediction !== undefined) {
-                        if (i % 100 === 0 || i === trainingData.length - 1) {
+                    if (actual && prediction !== undefined) {
+                        if (i % 100 === 0) {
                             console.log(`${i}: actual: ${actual}, prediction: ${prediction}`);
                         }
+
                         scorekeeper.guesses++;
                         if (actual[0] === prediction[0] && actual[0] === prediction[0]) {
                             scorekeeper.correct++;
                         }
+                    }
+
+                    if (!actual) {
+                        console.log(`prediction: ${prediction}`);
                     }
                 }
             }
