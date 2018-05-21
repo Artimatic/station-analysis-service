@@ -1,7 +1,7 @@
 import * as neataptic from 'neataptic';
 import { TrainingData } from '../shared/models/training-data.interface';
 
-const network = new neataptic.architect.LSTM(5, 7, 1);
+const network = new neataptic.architect.LSTM(5, 8, 2);
 
 class Precog {
     previous: any;
@@ -14,45 +14,45 @@ class Precog {
         console.log('Training data size: ', trainingData.length);
 
         network.train(smallSet, {
-            log: 5000,
+            log: 10000,
             iterations: 80000,
-            error: 0.03,
+            error: 0.08,
             clear: true,
             rate: 0.05,
         });
         return this.score(trainingData.slice(Math.floor(trainingData.length / 2), trainingData.length));
     }
 
-    private score(trainingData: TrainingData[]): string {
-        const score = { heads: 0, tails: 0, guesses: 0, correct: 0 };
+    private score(trainingData: TrainingData[]) {
+        const scorekeeper = { guesses: 0, correct: 0, score: 0 };
         for (let i = 0; i < trainingData.length; i++) {
             if (trainingData[i]) {
                 const actual = trainingData[i].output;
                 const input = trainingData[i].input;
                 if (actual && input) {
-                    const prediction = Math.round(network.activate(input));
+                    const rawPrediction = network.activate(input);
+                    const prediction = this.roundPrediction(rawPrediction[0], rawPrediction[1]);
 
                     if (prediction !== undefined) {
-                       // console.log(`actual: ${actual}, prediction: ${prediction}`);
-                        score.guesses++;
-                        if (actual[0] === prediction) {
-                            score.correct++;
+                        if (i % 100 === 0 || i === trainingData.length - 1) {
+                            console.log(`${i}: actual: ${actual}, prediction: ${prediction}`);
                         }
-                    }
-
-                    if (actual[0]) {
-                        score.heads++;
-                    } else {
-                        score.tails++;
+                        scorekeeper.guesses++;
+                        if (actual[0] === prediction[0] && actual[0] === prediction[0]) {
+                            scorekeeper.correct++;
+                        }
                     }
                 }
             }
         }
-        return `heads: ${score.heads}` +
-            `tails: ${score.tails}` +
-            `correct: ${score.correct}` +
-            `guesses: ${score.guesses}` +
-            `ratio: ${score.correct / score.guesses}`;
+        scorekeeper.score = scorekeeper.correct / scorekeeper.guesses;
+
+        console.log('Score: ', scorekeeper);
+        return scorekeeper;
+    }
+
+    private roundPrediction(x: number, y: number): number[] {
+        return [Math.round(x), Math.round(y)];
     }
 
     public run(): any {
