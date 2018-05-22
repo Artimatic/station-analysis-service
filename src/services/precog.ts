@@ -1,5 +1,6 @@
 import * as neataptic from 'neataptic';
 import { TrainingData } from '../shared/models/training-data.interface';
+import { Score } from '../shared/models/score.interface';
 
 const network = new neataptic.architect.LSTM(5, 8, 2);
 
@@ -10,10 +11,10 @@ class Precog {
 
 
     public testLstm(trainingData: TrainingData[]): any {
-        const smallSet = trainingData.slice(0, Math.floor(trainingData.length / 2));
+        const trainingSet = trainingData.slice(0, Math.floor(trainingData.length / 2));
         console.log('Training data size: ', trainingData.length);
 
-        network.train(smallSet, {
+        network.train(trainingSet, {
             log: 10000,
             iterations: 80000,
             error: 0.08,
@@ -23,12 +24,13 @@ class Precog {
         return this.score(trainingData.slice(Math.floor(trainingData.length / 2), trainingData.length));
     }
 
-    private score(trainingData: TrainingData[]) {
-        const scorekeeper = { guesses: 0, correct: 0, score: 0 };
-        for (let i = 0; i < trainingData.length; i++) {
-            if (trainingData[i]) {
-                const actual = trainingData[i].output;
-                const input = trainingData[i].input;
+    private score(scoringSet: TrainingData[]) {
+        const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
+
+        for (let i = 0; i < scoringSet.length; i++) {
+            if (scoringSet[i]) {
+                const actual = scoringSet[i].output;
+                const input = scoringSet[i].input;
                 if (input) {
                     const rawPrediction = network.activate(input);
                     const prediction = this.roundPrediction(rawPrediction[0], rawPrediction[1]);
@@ -45,11 +47,13 @@ class Precog {
                     }
 
                     if (!actual) {
+                        scorekeeper.nextOutput = prediction;
                         console.log(`prediction: ${prediction}`);
                     }
                 }
             }
         }
+
         scorekeeper.score = scorekeeper.correct / scorekeeper.guesses;
 
         console.log('Score: ', scorekeeper);
