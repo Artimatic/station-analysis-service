@@ -2,7 +2,7 @@ import * as neataptic from 'neataptic';
 import { TrainingData } from '../shared/models/training-data.interface';
 import { Score } from '../shared/models/score.interface';
 
-const network = new neataptic.architect.LSTM(5, 8, 2);
+const network = new neataptic.architect.LSTM(5, 10, 1);
 
 class Precog {
     previous: any;
@@ -11,13 +11,13 @@ class Precog {
 
 
     public testLstm(trainingData: TrainingData[]): any {
-        const trainingSet = trainingData.slice(0, Math.floor(trainingData.length / 2));
+        const trainingSet = trainingData.slice(0, trainingData.length - 2);
         console.log('Training data size: ', trainingData.length);
 
         network.train(trainingSet, {
             log: 10000,
-            iterations: 80000,
-            error: 0.08,
+            iterations: 100000,
+            error: 0.2,
             clear: true,
             rate: 0.05,
         });
@@ -33,7 +33,7 @@ class Precog {
                 const input = scoringSet[i].input;
                 if (input) {
                     const rawPrediction = network.activate(input);
-                    const prediction = this.roundPrediction(rawPrediction[0], rawPrediction[1]);
+                    const prediction = Math.round(rawPrediction);
 
                     if (actual && prediction !== undefined) {
                         if (i % 100 === 0) {
@@ -41,7 +41,7 @@ class Precog {
                         }
 
                         scorekeeper.guesses++;
-                        if (actual[0] === prediction[0] && actual[0] === prediction[0]) {
+                        if (actual[0] === prediction) {
                             scorekeeper.correct++;
                         }
                     }

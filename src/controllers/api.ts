@@ -13,7 +13,7 @@ import { TrainingData } from '../shared/models/training-data.interface';
  */
 export let getApi = (req: Request, res: Response) => {
   const requestQuery: Query = req.query;
-
+  console.log(requestQuery);
   const query = `http://localhost:8080/backtest/train?ticker=${requestQuery.symbol}` +
                   `&to=${requestQuery.to}&from=${requestQuery.from}`;
 
