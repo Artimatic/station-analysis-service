@@ -1,8 +1,17 @@
 import * as neataptic from 'neataptic';
 import { TrainingData } from '../shared/models/training-data.interface';
 import { Score } from '../shared/models/score.interface';
+import { NetworkOptions } from '../shared/models/network-options.interface';
 
-const network = new neataptic.architect.LSTM(5, 10, 1);
+const network = new neataptic.architect.LSTM(5, 8, 1);
+
+const defaultOptions: NetworkOptions = {
+    log: 10000,
+    iterations: 10000,
+    error: 0.08,
+    clear: true,
+    rate: 0.01
+};
 
 class Precog {
     previous: any;
@@ -10,17 +19,13 @@ class Precog {
     constructor() { }
 
 
-    public testLstm(trainingData: TrainingData[]): any {
+    public testLstm(trainingData: TrainingData[], options = defaultOptions): any {
         const trainingSet = trainingData.slice(0, trainingData.length - 2);
+
+        console.log('Network settings: ', options);
         console.log('Training data size: ', trainingData.length);
 
-        network.train(trainingSet, {
-            log: 10000,
-            iterations: 100000,
-            error: 0.2,
-            clear: true,
-            rate: 0.05,
-        });
+        network.train(trainingSet, options);
         return this.score(trainingData.slice(Math.floor(trainingData.length / 2), trainingData.length));
     }
 
