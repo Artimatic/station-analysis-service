@@ -1,4 +1,6 @@
 import * as neataptic from 'neataptic';
+import { Response } from 'express';
+
 import { TrainingData } from '../shared/models/training-data.interface';
 import { Score } from '../shared/models/score.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
@@ -19,17 +21,17 @@ class Precog {
     constructor() { }
 
 
-    public testLstm(trainingData: TrainingData[], options = defaultOptions): any {
+    public testLstm(trainingData: TrainingData[], options = defaultOptions, res: Response): any {
         const trainingSet = trainingData.slice(0, trainingData.length - 2);
 
         console.log('Network settings: ', options);
         console.log('Training data size: ', trainingData.length);
 
         network.train(trainingSet, options);
-        return this.score(trainingData.slice(Math.floor(trainingData.length / 2), trainingData.length));
+        return this.score(trainingData.slice(Math.floor(trainingData.length / 2), trainingData.length), res);
     }
 
-    private score(scoringSet: TrainingData[]) {
+    private score(scoringSet: TrainingData[], res: Response) {
         const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
 
         for (let i = 0; i < scoringSet.length; i++) {
@@ -62,6 +64,7 @@ class Precog {
         scorekeeper.score = scorekeeper.correct / scorekeeper.guesses;
 
         console.log('Score: ', scorekeeper);
+        res.send(scorekeeper);
         return scorekeeper;
     }
 
