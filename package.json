@@ -4,7 +4,7 @@
   "description": "Machine learning microservice",
   "main": "index.js",
   "scripts": {
-    "start": "npm run serve",
+    "start": "npm run build && npm run serve",
     "serve": "node dist/server.js",
     "watch-node": "nodemon dist/server.js",
     "build": "npm run build-ts && npm run tslint",

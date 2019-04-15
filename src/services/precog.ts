@@ -21,7 +21,7 @@ class Precog {
     constructor() { }
 
 
-    public testLstm(trainingData: TrainingData[], options = defaultOptions, res: Response): any {
+    public testLstm(trainingData: TrainingData[], options = defaultOptions): any {
         const trainingSet = trainingData.slice(0, trainingData.length - 2);
 
         console.log('Network settings: ', options);
@@ -74,7 +74,6 @@ class Precog {
         scorekeeper.score = scorekeeper.correct / scorekeeper.guesses;
 
         console.log('Score: ', scorekeeper);
-        res.send(scorekeeper);
         return scorekeeper;
     }
 

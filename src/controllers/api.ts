@@ -17,7 +17,7 @@ export let getApi = (req: Request, res: Response) => {
   const requestQuery: Query = req.query;
   console.log(requestQuery);
   const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
-    `&to=${requestQuery.to}&from=${requestQuery.from}`;
+    `&to=${requestQuery.to}&from=${requestQuery.from}&save=true`;
 
   const options = {
     method: 'GET',
@@ -25,8 +25,8 @@ export let getApi = (req: Request, res: Response) => {
     json: true
   };
 
-  const rate = requestQuery.rate || 0.01;
   return request(options).then((results) => {
+    const testResults = [];
     const rates = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1];
     for (let rate = 0, end = rates.length; rate < end; rate++) {
       const option: NetworkOptions = {
@@ -36,9 +36,9 @@ export let getApi = (req: Request, res: Response) => {
         clear: true,
         rate: rates[rate]
       };
-      const testResults = Precog.testLstm(results, option);
+      testResults.push(Precog.testLstm(results, option));
     }
 
-    res.send('testResults');
+    res.send(testResults);
   });
 };

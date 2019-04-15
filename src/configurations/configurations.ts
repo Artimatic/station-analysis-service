@@ -1,5 +1,5 @@
 const configurations = {
-    goliathUrl: 'http://localhost:8101/'
+    goliathUrl: 'http://localhost:8100/'
 };
 
 export default configurations;
