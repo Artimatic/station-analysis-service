@@ -27,13 +27,18 @@ export let getApi = (req: Request, res: Response) => {
 
   const rate = requestQuery.rate || 0.01;
   return request(options).then((results) => {
-    const option: NetworkOptions = {
-      log: 10000,
-      iterations: 20000,
-      error: 0.1,
-      clear: true,
-      rate: rate
-    };
-    Precog.testLstm(results, option, res);
+    const rates = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1];
+    for (let rate = 0, end = rates.length; rate < end; rate++) {
+      const option: NetworkOptions = {
+        log: 10000,
+        iterations: 8000,
+        error: 0.1,
+        clear: true,
+        rate: rates[rate]
+      };
+      const testResults = Precog.testLstm(results, option);
+    }
+
+    res.send('testResults');
   });
 };

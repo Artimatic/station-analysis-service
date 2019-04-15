@@ -1,11 +1,11 @@
 import * as neataptic from 'neataptic';
-import { Response } from 'express';
-
+import brain from 'brain.js';
 import { TrainingData } from '../shared/models/training-data.interface';
 import { Score } from '../shared/models/score.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
 
 const network = new neataptic.architect.LSTM(5, 8, 1);
+const lstm = new brain.recurrent.LSTM();
 
 const defaultOptions: NetworkOptions = {
     log: 10000,
@@ -28,10 +28,20 @@ class Precog {
         console.log('Training data size: ', trainingData.length);
 
         network.train(trainingSet, options);
-        return this.score(trainingData.slice(Math.floor(trainingData.length / 2), trainingData.length), res);
+        return this.score(trainingData.slice(Math.floor(trainingData.length / 2), trainingData.length), false);
     }
 
-    private score(scoringSet: TrainingData[], res: Response) {
+    public testBrainLstm(trainingData: TrainingData[], options = defaultOptions): any {
+        const trainingSet = trainingData.slice(0, trainingData.length / 2);
+
+        console.log('Training data size: ', trainingData.length);
+
+        const result = lstm.train(trainingSet, { iterations: 1500 });
+
+        return this.score(trainingData.slice(Math.floor(trainingData.length / 2), trainingData.length), true);
+    }
+
+    private score(scoringSet: TrainingData[], brain: boolean) {
         const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
 
         for (let i = 0; i < scoringSet.length; i++) {
@@ -39,7 +49,7 @@ class Precog {
                 const actual = scoringSet[i].output;
                 const input = scoringSet[i].input;
                 if (input) {
-                    const rawPrediction = network.activate(input);
+                    const rawPrediction = brain ? lstm.run(input) : network.activate(input);
                     const prediction = Math.round(rawPrediction);
 
                     if (actual && prediction !== undefined) {
