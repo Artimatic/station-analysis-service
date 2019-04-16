@@ -17,7 +17,7 @@ export let getApi = (req: Request, res: Response) => {
   const requestQuery: Query = req.query;
   console.log(requestQuery);
   const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
-    `&to=${requestQuery.to}&from=${requestQuery.from}&save=true`;
+    `&to=${requestQuery.to}&from=${requestQuery.from}&save=false`;
 
   const options = {
     method: 'GET',
