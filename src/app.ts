@@ -84,5 +84,13 @@ app.use(
  * API routes.
  */
 app.get('/api', apiController.getApi);
+app.get(
+  '/health',
+  function(req, res) {
+      res.send({
+        status: 'UP'
+    });
+  }
+);
 
 export default app;
