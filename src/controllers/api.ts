@@ -15,7 +15,7 @@ import configurations from '../configurations';
  */
 export let getApi = (req: Request, res: Response) => {
   const requestQuery: Query = req.query;
-  console.log(requestQuery);
+  console.log(new Date(), requestQuery);
   const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
     `&to=${requestQuery.to}&from=${requestQuery.from}&save=false`;
 
@@ -27,7 +27,7 @@ export let getApi = (req: Request, res: Response) => {
 
   return request(options).then((results) => {
     const testResults = [];
-    const rates = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1];
+    const rates = [0.05, 0.06, 0.07, 0.08, 0.09, 0.1];
     for (let rate = 0, end = rates.length; rate < end; rate++) {
       const option: NetworkOptions = {
         log: 10000,
@@ -38,6 +38,18 @@ export let getApi = (req: Request, res: Response) => {
       };
       testResults.push(Precog.testLstm(results, option));
     }
+
+    const date = new Date(requestQuery.to);
+    request.post({
+      uri: configurations.apps.goliath + 'precog/prediction',
+      json: true,
+      gzip: true,
+      body: {
+        symbol: requestQuery.symbol,
+        date: date.toISOString(),
+        results: testResults
+      }
+    });
 
     res.send(testResults);
   });
