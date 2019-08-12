@@ -20,6 +20,12 @@ class Precog {
     trainingData: any[] = [];
     constructor() { }
 
+    public activate(input, round: boolean) {
+        if (round) {
+            return Math.round(network.activate(input));
+        }
+        return network.activate(input);
+    }
 
     public testLstm(trainingData: TrainingData[], options = defaultOptions): any {
         const trainingSet = trainingData.slice(0, trainingData.length - 2);
@@ -139,8 +145,6 @@ class Precog {
     }
 
     private train() {
-        // 71140000
-        // Train the network, setting clue to true is the key to the solution
         network.train(this.trainingData, {
             log: 5000,
             iterations: 10000,

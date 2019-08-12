@@ -84,6 +84,8 @@ app.use(
  * API routes.
  */
 app.get('/api', apiController.getApi);
+app.post('/api/activate', apiController.activateNetwork);
+
 app.get(
   '/health',
   function(req, res) {

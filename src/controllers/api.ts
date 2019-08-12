@@ -1,11 +1,9 @@
 'use strict';
 
-import async from 'async';
 import request from 'request-promise';
 import { Response, Request } from 'express';
 import Precog from './../services/precog';
 import { Query } from '../shared/models/query.interface';
-import { TrainingData } from '../shared/models/training-data.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
 import configurations from '../configurations';
 
@@ -27,7 +25,7 @@ export let getApi = (req: Request, res: Response) => {
 
   return request(options).then((results) => {
     const testResults = [];
-    const rates = [0.05, 0.06, 0.07, 0.08, 0.09, 0.1];
+    const rates = [0.01];
     for (let rate = 0, end = rates.length; rate < end; rate++) {
       const option: NetworkOptions = {
         log: 10000,
@@ -53,4 +51,11 @@ export let getApi = (req: Request, res: Response) => {
 
     res.send(testResults);
   });
+};
+
+export let activateNetwork = (req: Request, res: Response) => {
+  const requestBody = req.body;
+  console.log(new Date(), requestBody);
+  const prediction = Precog.activate(requestBody.input, requestBody.round);
+  res.send(prediction);
 };

@@ -3,4 +3,5 @@ export interface Query {
     to: string;
     from: string;
     rate?: number;
+    input?: any;
 }
