@@ -20,11 +20,12 @@ class Precog {
     trainingData: any[] = [];
     constructor() { }
 
-    public activate(input, round: boolean) {
+    public activate(input, round: boolean): number[] {
+        const result = network.activate(input);
         if (round) {
-            return Math.round(network.activate(input));
+            return [Math.round(result)];
         }
-        return network.activate(input);
+        return result;
     }
 
     public testLstm(trainingData: TrainingData[], options = defaultOptions): any {

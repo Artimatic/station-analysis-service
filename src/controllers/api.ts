@@ -57,5 +57,6 @@ export let activateNetwork = (req: Request, res: Response) => {
   const requestBody = req.body;
   console.log(new Date(), requestBody);
   const prediction = Precog.activate(requestBody.input, requestBody.round);
+
   res.send(prediction);
 };
