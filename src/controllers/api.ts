@@ -37,18 +37,6 @@ export let getApi = (req: Request, res: Response) => {
       testResults.push(Precog.testLstm(results, option));
     }
 
-    const date = new Date(requestQuery.to);
-    request.post({
-      uri: configurations.apps.goliath + 'precog/prediction',
-      json: true,
-      gzip: true,
-      body: {
-        symbol: requestQuery.symbol,
-        date: date.toISOString(),
-        results: testResults
-      }
-    });
-
     res.send(testResults);
   });
 };
@@ -57,6 +45,19 @@ export let activateNetwork = (req: Request, res: Response) => {
   const requestBody = req.body;
   console.log(new Date(), requestBody);
   const prediction = Precog.activate(requestBody.input, requestBody.round);
+
+  const date = new Date(requestBody.to);
+  request.post({
+    uri: configurations.apps.goliath + 'precog/prediction',
+    json: true,
+    gzip: true,
+    body: {
+      symbol: requestBody.symbol,
+      date: date.toISOString(),
+      results: [prediction]
+    }
+  });
+  console.log('Prediction: ', prediction);
 
   res.send(prediction);
 };
