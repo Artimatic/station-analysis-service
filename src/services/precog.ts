@@ -3,6 +3,7 @@ import brain from 'brain.js';
 import { TrainingData } from '../shared/models/training-data.interface';
 import { Score } from '../shared/models/score.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
+import * as _ from 'lodash';
 
 const network = new neataptic.architect.LSTM(5, 8, 1);
 const lstm = new brain.recurrent.LSTM();
@@ -25,10 +26,10 @@ class Precog {
 
         const result = network.activate(input);
         if (round) {
-            scorekeeper.nextOutput = Math.round(result);
+            scorekeeper.nextOutput = _.round(result);
         } else {
             console.log('result: ', result);
-            scorekeeper.nextOutput = result;
+            scorekeeper.nextOutput = _.round(result, 2);
         }
 
         return scorekeeper;
