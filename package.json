@@ -39,7 +39,7 @@
     "express-validator": "^4.3.0",
     "lodash": "^4.17.4",
     "lusca": "^1.5.2",
-    "mongoose": "^4.13.11",
+    "mongoose": "^5.7.5",
     "neataptic": "^1.4.7",
     "nodemailer": "^4.4.1",
     "passport": "^0.4.0",
