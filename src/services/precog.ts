@@ -3,6 +3,7 @@ import brain from 'brain.js';
 import { TrainingData } from '../shared/models/training-data.interface';
 import { Score } from '../shared/models/score.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
+import * as _ from 'lodash';
 
 const network = new neataptic.architect.LSTM(5, 8, 1);
 const lstm = new brain.recurrent.LSTM();
@@ -20,6 +21,19 @@ class Precog {
     trainingData: any[] = [];
     constructor() { }
 
+    public activate(input, round: boolean): Score {
+        const scorekeeper: Score = { guesses: 0, correct: 0, score: 0};
+
+        const result = network.activate(input);
+        if (round) {
+            scorekeeper.nextOutput = _.round(result);
+        } else {
+            console.log('result: ', result);
+            scorekeeper.nextOutput = _.round(result, 2);
+        }
+
+        return scorekeeper;
+    }
 
     public testLstm(trainingData: TrainingData[], options = defaultOptions): any {
         const trainingSet = trainingData.slice(0, trainingData.length - 2);
@@ -139,8 +153,6 @@ class Precog {
     }
 
     private train() {
-        // 71140000
-        // Train the network, setting clue to true is the key to the solution
         network.train(this.trainingData, {
             log: 5000,
             iterations: 10000,

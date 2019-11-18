@@ -1,3 +1,4 @@
 /node_modules
 /dist
 /src/configurations/configurations.ts
+debug.log
