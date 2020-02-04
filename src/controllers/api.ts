@@ -7,11 +7,7 @@ import { Query } from '../shared/models/query.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
 import configurations from '../configurations';
 
-/**
- * GET /api
- * List of API examples.
- */
-export let getApi = (req: Request, res: Response) => {
+export const getApi = (req: Request, res: Response) => {
   const requestQuery: Query = req.query;
   console.log(new Date(), requestQuery);
   const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
@@ -28,6 +24,7 @@ export let getApi = (req: Request, res: Response) => {
     const rates = [0.01];
     for (let rate = 0, end = rates.length; rate < end; rate++) {
       const option: NetworkOptions = {
+        trainingSize: 0.7,
         log: 10000,
         iterations: 8000,
         error: 0.1,
@@ -41,7 +38,7 @@ export let getApi = (req: Request, res: Response) => {
   });
 };
 
-export let activateNetwork = (req: Request, res: Response) => {
+export const activateNetwork = (req: Request, res: Response) => {
   const requestBody = req.body;
   console.log(new Date(), requestBody);
   const prediction = Precog.activate(requestBody.input, requestBody.round);

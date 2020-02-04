@@ -21,6 +21,7 @@ dotenv.config({ path: '.env.example' });
 
 // Controllers (route handlers)
 import * as apiController from './controllers/api';
+import * as machineLearningController from './controllers/machine-learning.controller';
 
 // Create Express server
 const app = express();
@@ -85,6 +86,7 @@ app.use(
  */
 app.get('/api', apiController.getApi);
 app.post('/api/activate', apiController.activateNetwork);
+app.get('/api/train-model', machineLearningController.trainModelV2);
 
 app.get(
   '/health',
