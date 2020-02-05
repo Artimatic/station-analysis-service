@@ -22,7 +22,7 @@ class MachineLearningService {
   // }
 
   async trainModel(modelParams: ModelParams, callback) {
-
+    console.log('training size: ', modelParams.inputs.length);
     console.log(modelParams);
 
     const inputs = modelParams.inputs;
@@ -86,7 +86,6 @@ class MachineLearningService {
       });
 
     this.trainedModels[modelParams.name] = model;
-    console.log('set model: ', this.trainedModels);
     // await model.save('localstorage://tfjs-stocks');
     // const model = await tf.loadLayersModel('localstorage://tfjs-stocks');
     // const hist = {};
@@ -95,7 +94,6 @@ class MachineLearningService {
   }
 
   makePredictions(inputs, model) {
-    console.log('model: ', inputs, model);
     // let X = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
     if (model) {
       const predictedResults = model.predict(tf.tensor2d(inputs, [inputs.length, inputs[0].length]).div(tf.scalar(10))).mul(10);

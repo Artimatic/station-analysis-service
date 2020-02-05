@@ -1,11 +1,15 @@
 import { Response, Request } from 'express';
-import { Query } from '../shared/models/query.interface';
 import configurations from '../configurations';
 import request from 'request-promise';
 import MachineLearningService from '../services/machine-learning.service';
 
 export const trainModelV2 = async (req: Request, res: Response) => {
-  const requestQuery: Query = req.query;
+  const requestQuery: {
+    to: string,
+    from: string,
+    symbol: string,
+    epochs: number
+  } = req.query;
   console.log(new Date(), requestQuery);
   const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
     `&to=${requestQuery.to}&from=${requestQuery.from}&save=false`;
@@ -23,9 +27,9 @@ export const trainModelV2 = async (req: Request, res: Response) => {
       outputs: [],
       trainingSize: 7,
       windowSize: 5,
-      epochs: 5,
+      epochs: requestQuery.epochs || 100,
       learningRate: 0.01,
-      layers: 4
+      layers: 6
     };
 
     results.forEach((daily) => {
