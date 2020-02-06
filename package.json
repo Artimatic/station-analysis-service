@@ -29,7 +29,6 @@
     "bcrypt-nodejs": "^0.0.3",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
-    "brain.js": "git://github.com/BrainJS/brain.js.git#master",
     "compression": "^1.7.1",
     "connect-mongo": "^2.0.0",
     "dotenv": "^4.0.0",

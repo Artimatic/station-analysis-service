@@ -11,7 +11,7 @@ export const getApi = (req: Request, res: Response) => {
   const requestQuery: Query = req.query;
   console.log(new Date(), requestQuery);
   const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
-    `&to=${requestQuery.to}&from=${requestQuery.from}&save=false`;
+    `&to=${requestQuery.to}&from=${requestQuery.from}&save=false&useClosePrice=false`;
 
   const options = {
     method: 'GET',
@@ -31,7 +31,7 @@ export const getApi = (req: Request, res: Response) => {
         clear: true,
         rate: rates[rate]
       };
-      testResults.push(Precog.testLstm(results, option));
+      testResults.push(Precog.testLstm(requestQuery.symbol, results, option));
     }
 
     res.send(testResults);
@@ -41,7 +41,7 @@ export const getApi = (req: Request, res: Response) => {
 export const activateNetwork = (req: Request, res: Response) => {
   const requestBody = req.body;
   console.log(new Date(), requestBody);
-  const prediction = Precog.activate(requestBody.input, requestBody.round);
+  const prediction = Precog.activate(requestBody.symbol, requestBody.input, requestBody.round);
 
   const date = new Date(requestBody.to);
   request.post({

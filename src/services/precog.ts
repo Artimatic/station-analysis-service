@@ -14,15 +14,16 @@ const defaultOptions: NetworkOptions = {
 };
 
 class Precog {
-    network = new neataptic.architect.LSTM(5, 6, 1);
+    closePriceNetwork = {};
+    network = {};
     previous: any;
     trainingData: any[] = [];
     constructor() { }
 
-    public activate(input, round: boolean): Score {
-        const scorekeeper: Score = { guesses: 0, correct: 0, score: 0};
+    public activate(symbol: string, input, round: boolean, useClosePrice = false): Score {
+        const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
 
-        const result = this.network.activate(input);
+        const result = useClosePrice ? this.closePriceNetwork[symbol].activate(input) : this.network[symbol].activate(input);
         if (round) {
             scorekeeper.nextOutput = _.round(result);
         } else {
@@ -33,17 +34,35 @@ class Precog {
         return scorekeeper;
     }
 
-    public testLstm(trainingData: TrainingData[], options = defaultOptions): any {
+    public testLstm(symbol: string, trainingData: TrainingData[], options = defaultOptions): any {
         const trainingSet = trainingData.slice(0, Math.floor((options.trainingSize || 0.7) * trainingData.length));
 
         console.log('Network settings: ', options);
         console.log('Training data size: ', trainingData.length);
 
-        this.network.train(trainingSet, options);
-        return this.score(trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length), trainingData.length));
+        this.closePriceNetwork[symbol] = new neataptic.architect.LSTM(5, 6, 1);
+        this.closePriceNetwork[symbol].train(trainingSet, options);
+        return this.score(symbol,
+                        trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
+                        trainingData.length),
+                        this.closePriceNetwork[symbol]);
     }
 
-    private score(scoringSet: TrainingData[]) {
+    public testLstmClosePrice(symbol: string, trainingData: TrainingData[], options = defaultOptions): any {
+        const trainingSet = trainingData.slice(0, Math.floor((options.trainingSize || 0.7) * trainingData.length));
+
+        console.log('Network settings: ', options);
+        console.log('Training data size: ', trainingData.length);
+
+        this.network[symbol] = new neataptic.architect.LSTM(5, 6, 1);
+        this.network[symbol].train(trainingSet, options);
+        return this.score(symbol,
+                        trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
+                        trainingData.length),
+                        this.network[symbol]);
+    }
+
+    private score(symbol: string, scoringSet: TrainingData[], network) {
         const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
 
         for (let i = 0; i < scoringSet.length; i++) {
@@ -51,7 +70,7 @@ class Precog {
                 const actual = scoringSet[i].output;
                 const input = scoringSet[i].input;
                 if (input) {
-                    const rawPrediction =  this.network.activate(input);
+                    const rawPrediction = network.activate(input);
                     const prediction = Math.round(rawPrediction);
 
                     if (actual && prediction !== undefined) {
@@ -77,77 +96,6 @@ class Precog {
 
         console.log('Score: ', scorekeeper);
         return scorekeeper;
-    }
-
-    private roundPrediction(x: number, y: number): number[] {
-        return [Math.round(x), Math.round(y)];
-    }
-
-    public run(): any {
-        let prediction;
-        const score = { heads: 0, tails: 0, guesses: 0, correct: 0 };
-        for (let i = 0; i < 1000; i++) {
-            const coinSide = this.flip();
-            if (prediction !== undefined) {
-                console.log(`coin flip: ${coinSide}, prediction: ${prediction}`);
-
-                score.guesses++;
-                if (coinSide === prediction) {
-                    score.correct++;
-                }
-            }
-
-            if (coinSide) {
-                score.heads++;
-            } else {
-                score.tails++;
-            }
-            prediction = this.addSet(coinSide);
-        }
-        console.log(`heads: ${score.heads},
-        tails: ${score.tails},
-        correct: ${score.correct},
-        guesses: ${score.guesses},
-        ratio: ${score.correct / score.guesses}`);
-    }
-
-    private flip(): number {
-        return Math.round(Math.random());
-    }
-
-    private predict() {
-        let output;
-        // Iterate over previous sets to get into the 'flow'
-        for (const i in this.trainingData) {
-            const input = this.trainingData[i].input;
-            output = Math.round(this.network.activate([input]));
-        }
-
-        // Activate network with previous output
-        const input = output;
-        return Math.round(this.network.activate([input]));
-    }
-
-    private addSet(side: any): any {
-        let predicted;
-        if (this.previous != undefined) {
-            this.trainingData.push({ input: [this.previous], output: [side] });
-            this.train();
-            predicted = this.predict();
-        }
-
-        this.previous = side;
-        return predicted;
-    }
-
-    private train() {
-        this.network.train(this.trainingData, {
-            log: 5000,
-            iterations: 10000,
-            rate: 0.1,
-            error: 0.025,
-            clear: true
-        });
     }
 }
 

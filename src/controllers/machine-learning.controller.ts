@@ -5,14 +5,15 @@ import MachineLearningService from '../services/machine-learning.service';
 
 export const trainModelV2 = async (req: Request, res: Response) => {
   const requestQuery: {
-    to: string,
-    from: string,
-    symbol: string,
-    epochs: number
+    to: string;
+    from: string;
+    symbol: string;
+    epochs: number;
+    useClosePrice: boolean;
   } = req.query;
   console.log(new Date(), requestQuery);
   const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
-    `&to=${requestQuery.to}&from=${requestQuery.from}&save=false`;
+    `&to=${requestQuery.to}&from=${requestQuery.from}&save=false&${requestQuery.useClosePrice}`;
 
   const options = {
     method: 'GET',
