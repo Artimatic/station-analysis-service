@@ -85,6 +85,7 @@ app.use(
  * API routes.
  */
 app.get('/api', apiController.getApi);
+app.get('/api/test-model', apiController.testModel);
 app.post('/api/activate', apiController.activateNetwork);
 app.get('/api/train-model', machineLearningController.trainModelV2);
 
