@@ -92,3 +92,24 @@ export const testModel = (req: Request, res: Response) => {
     res.send(testResults);
   });
 };
+
+export const activateV2Network = (req: Request, res: Response) => {
+  const requestBody = req.body;
+  console.log(new Date(), requestBody);
+  const prediction = Precog.activate(requestBody.symbol, requestBody.input, requestBody.round, true);
+
+  const date = new Date(requestBody.to);
+  request.post({
+    uri: configurations.apps.goliath + 'precog/prediction',
+    json: true,
+    gzip: true,
+    body: {
+      symbol: requestBody.symbol,
+      date: date.toISOString(),
+      results: [prediction]
+    }
+  });
+  console.log('Prediction: ', prediction);
+
+  res.send(prediction);
+};

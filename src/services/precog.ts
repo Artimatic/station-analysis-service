@@ -14,16 +14,16 @@ const defaultOptions: NetworkOptions = {
 };
 
 class Precog {
-    closePriceNetwork = {};
+    v2Network = {};
     network = {};
     previous: any;
     trainingData: any[] = [];
     constructor() { }
 
-    public activate(symbol: string, input, round: boolean, useClosePrice = false): Score {
+    public activate(symbol: string, input, round: boolean, useV2Network = false): Score {
         const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
 
-        const result = useClosePrice ? this.closePriceNetwork[symbol].activate(input) : this.network[symbol].activate(input);
+        const result = useV2Network ? this.v2Network[symbol].activate(input) : this.network[symbol].activate(input);
         if (round) {
             scorekeeper.nextOutput = _.round(result);
         } else {
@@ -54,12 +54,12 @@ class Precog {
         console.log('Network settings: ', options);
         console.log('Training data size: ', trainingData.length);
 
-        this.closePriceNetwork[symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
-        this.closePriceNetwork[symbol].train(trainingSet, options);
+        this.v2Network[symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
+        this.v2Network[symbol].train(trainingSet, options);
         return this.score(symbol,
                         trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
                         trainingData.length),
-                        this.closePriceNetwork[symbol]);
+                        this.v2Network[symbol]);
     }
 
     private score(symbol: string, scoringSet: TrainingData[], network) {
