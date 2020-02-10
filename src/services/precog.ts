@@ -40,12 +40,12 @@ class Precog {
         console.log('Network settings: ', options);
         console.log('Training data size: ', trainingData.length);
 
-        this.closePriceNetwork[symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
-        this.closePriceNetwork[symbol].train(trainingSet, options);
+        this.network[symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
+        this.network[symbol].train(trainingSet, options);
         return this.score(symbol,
                         trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
                         trainingData.length),
-                        this.closePriceNetwork[symbol]);
+                        this.network[symbol]);
     }
 
     public testLstmClosePrice(symbol: string, trainingData: TrainingData[], options = defaultOptions): any {
@@ -54,12 +54,12 @@ class Precog {
         console.log('Network settings: ', options);
         console.log('Training data size: ', trainingData.length);
 
-        this.network[symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
-        this.network[symbol].train(trainingSet, options);
+        this.closePriceNetwork[symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
+        this.closePriceNetwork[symbol].train(trainingSet, options);
         return this.score(symbol,
                         trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
                         trainingData.length),
-                        this.network[symbol]);
+                        this.closePriceNetwork[symbol]);
     }
 
     private score(symbol: string, scoringSet: TrainingData[], network) {
