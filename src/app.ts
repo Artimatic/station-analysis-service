@@ -86,6 +86,7 @@ app.use(
  */
 app.get('/api', apiController.getApi);
 app.get('/api/test-model', apiController.testModel);
+app.post('/api/train-custom', apiController.customModel);
 app.post('/api/activate', apiController.activateNetwork);
 app.post('/api/v2/activate', apiController.activateV2Network);
 app.get('/api/train-model', machineLearningController.trainModelV2);

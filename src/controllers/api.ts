@@ -93,6 +93,31 @@ export const testModel = (req: Request, res: Response) => {
   });
 };
 
+export const customModel = (req: Request, res: Response) => {
+  const requestBody = req.body;
+  const symbol = requestBody.symbol;
+  const modelName = requestBody.modelName;
+  const trainingData = requestBody.trainingData;
+
+  console.log('Custom train ', modelName, symbol, new Date());
+  const testResults = [];
+  const rates = [0.01];
+  for (let rate = 0, end = rates.length; rate < end; rate++) {
+    const option: NetworkOptions = {
+      trainingSize: 0.7,
+      log: 10000,
+      iterations: 8000,
+      error: 0.1,
+      clear: true,
+      rate: rates[rate]
+    };
+
+    testResults.push(Precog.testIntradayModels(symbol, modelName, trainingData, option));
+  }
+
+  res.send(testResults);
+};
+
 export const activateV2Network = (req: Request, res: Response) => {
   const requestBody = req.body;
   console.log(new Date(), requestBody);
