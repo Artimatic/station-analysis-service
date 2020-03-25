@@ -79,7 +79,7 @@ class Precog {
         }
 
         this.customNetworks[modelName][symbol].train(trainingSet, options);
-        return this.score(symbol,
+        return this.intradayScore(symbol,
             trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
                 trainingData.length),
             this.customNetworks[modelName][symbol]);
@@ -111,6 +111,42 @@ class Precog {
                     const prediction = Math.round(rawPrediction);
 
                     if (actual && prediction !== undefined) {
+                        if (i % 100 === 0) {
+                            console.log(`${i}: actual: ${actual}, prediction: ${prediction}`);
+                        }
+
+                        scorekeeper.guesses++;
+                        if (actual[0] === prediction) {
+                            scorekeeper.correct++;
+                        }
+                    }
+
+                    if (!actual) {
+                        scorekeeper.nextOutput = prediction;
+                        console.log(`prediction: ${prediction}`);
+                    }
+                }
+            }
+        }
+
+        scorekeeper.score = scorekeeper.correct / scorekeeper.guesses;
+
+        console.log('Score: ', scorekeeper);
+        return scorekeeper;
+    }
+
+    private intradayScore(symbol: string, scoringSet: TrainingData[], network) {
+        const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
+
+        for (let i = 0; i < scoringSet.length; i++) {
+            if (scoringSet[i]) {
+                const actual = scoringSet[i].output;
+                const input = scoringSet[i].input;
+                if (input) {
+                    const rawPrediction = network.activate(input);
+                    const prediction = Math.round(rawPrediction);
+
+                    if (actual && prediction === 1) {
                         if (i % 100 === 0) {
                             console.log(`${i}: actual: ${actual}, prediction: ${prediction}`);
                         }
