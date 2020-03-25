@@ -35,6 +35,21 @@ class Precog {
         return scorekeeper;
     }
 
+    public activateCustom(symbol: string, modelName: string, input, round: boolean): Score {
+        const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
+
+        const result = this.customNetworks[modelName][symbol].activate(input);
+        if (round) {
+            scorekeeper.nextOutput = _.round(result);
+        } else {
+            console.log('result: ', result);
+            scorekeeper.nextOutput = _.round(result, 2);
+        }
+
+        return scorekeeper;
+    }
+
+
     public testLstm(symbol: string, trainingData: TrainingData[], options = defaultOptions): any {
         const trainingSet = trainingData.slice(0, Math.floor((options.trainingSize || 0.7) * trainingData.length));
 
@@ -44,9 +59,9 @@ class Precog {
         this.network[symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
         this.network[symbol].train(trainingSet, options);
         return this.score(symbol,
-                        trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
-                        trainingData.length),
-                        this.network[symbol]);
+            trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
+                trainingData.length),
+            this.network[symbol]);
     }
 
     public testIntradayModels(symbol: string, modelName: string, trainingData: TrainingData[], options = defaultOptions): any {
@@ -59,12 +74,15 @@ class Precog {
             this.customNetworks[modelName] = {};
         }
 
-        this.customNetworks[modelName][symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
+        if (!this.customNetworks[modelName][symbol]) {
+            this.customNetworks[modelName][symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
+        }
+
         this.customNetworks[modelName][symbol].train(trainingSet, options);
         return this.score(symbol,
-                        trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
-                        trainingData.length),
-                        this.customNetworks[modelName][symbol]);
+            trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
+                trainingData.length),
+            this.customNetworks[modelName][symbol]);
     }
 
     public testLstmClosePrice(symbol: string, trainingData: TrainingData[], options = defaultOptions): any {
@@ -76,9 +94,9 @@ class Precog {
         this.v2Network[symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
         this.v2Network[symbol].train(trainingSet, options);
         return this.score(symbol,
-                        trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
-                        trainingData.length),
-                        this.v2Network[symbol]);
+            trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
+                trainingData.length),
+            this.v2Network[symbol]);
     }
 
     private score(symbol: string, scoringSet: TrainingData[], network) {

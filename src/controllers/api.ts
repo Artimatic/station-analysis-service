@@ -118,6 +118,25 @@ export const customModel = (req: Request, res: Response) => {
   res.send(testResults);
 };
 
+export const activateCustomModel = (req: Request, res: Response) => {
+  const requestBody = req.body;
+  console.log(new Date(), requestBody);
+  const prediction = Precog.activateCustom(requestBody.symbol, requestBody.modelName, requestBody.input, requestBody.round);
+
+  request.post({
+    uri: configurations.apps.goliath + 'precog/prediction',
+    json: true,
+    gzip: true,
+    body: {
+      symbol: requestBody.symbol + '_intraday',
+      results: [prediction]
+    }
+  });
+  console.log('Prediction: ', prediction);
+
+  res.send(prediction);
+};
+
 export const activateV2Network = (req: Request, res: Response) => {
   const requestBody = req.body;
   console.log(new Date(), requestBody);
