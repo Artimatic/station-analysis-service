@@ -148,6 +148,7 @@ class Precog {
 
                     if (actual && prediction === 1) {
                         if (i % 100 === 0) {
+                            console.log('Input: ', input);
                             console.log(`${i}: actual: ${actual}, prediction: ${prediction}`);
                         }
 
