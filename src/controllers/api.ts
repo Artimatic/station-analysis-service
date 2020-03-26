@@ -98,8 +98,12 @@ export const customModel = (req: Request, res: Response) => {
   const symbol = requestBody.symbol;
   const modelName = requestBody.modelName;
   const trainingData = requestBody.trainingData;
+  console.log('==========Custom train==========');
+  console.log('Date: ', new Date());
+  console.log('Model Name: ', modelName);
+  console.log('Stock: ', symbol);
+  console.log('Data Dates: ', trainingData[0].date, ' - ', trainingData[trainingData.length - 1].date);
 
-  console.log('Custom train ', modelName, symbol, new Date());
   const testResults = [];
   const rates = [0.01];
   for (let rate = 0, end = rates.length; rate < end; rate++) {
@@ -114,6 +118,7 @@ export const customModel = (req: Request, res: Response) => {
 
     testResults.push(Precog.testIntradayModels(symbol, modelName, trainingData, option));
   }
+  console.log('==========END==========');
 
   res.send(testResults);
 };
