@@ -147,7 +147,7 @@ class Precog {
                     const prediction = Math.round(rawPrediction);
 
                     if (actual && prediction === 1) {
-                        if (i % 10 === 0) {
+                        if (i % 100 === 0) {
                             console.log('Input: ', input);
                             console.log(`${i}: actual: ${actual}, prediction: ${prediction}`);
                         }
