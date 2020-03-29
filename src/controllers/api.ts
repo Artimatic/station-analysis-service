@@ -98,6 +98,7 @@ export const customModel = (req: Request, res: Response) => {
   const symbol = requestBody.symbol;
   const modelName = requestBody.modelName;
   const trainingData = requestBody.trainingData;
+  const trainingSize = requestBody.trainingSize;
   console.log('==========Custom train==========');
   console.log('Date: ', new Date());
   console.log('Model Name: ', modelName);
@@ -108,7 +109,7 @@ export const customModel = (req: Request, res: Response) => {
   const rates = [0.01];
   for (let rate = 0, end = rates.length; rate < end; rate++) {
     const option: NetworkOptions = {
-      trainingSize: 0.7,
+      trainingSize: Number(trainingSize),
       log: 10000,
       iterations: 8000,
       error: 0.1,

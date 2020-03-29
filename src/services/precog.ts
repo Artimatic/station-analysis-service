@@ -65,22 +65,25 @@ class Precog {
     }
 
     public testIntradayModels(symbol: string, modelName: string, trainingData: TrainingData[], options = defaultOptions): any {
-        const trainingSet = trainingData.slice(0, Math.floor((options.trainingSize || 0.7) * trainingData.length));
+        if (options.trainingSize) {
+            const trainingSet = trainingData.slice(0, Math.floor((options.trainingSize) * trainingData.length));
 
-        console.log('Network settings: ', options);
-        console.log('Training data size: ', trainingData.length);
+            console.log('Network settings: ', options);
+            console.log('Training data size: ', trainingData.length);
 
-        if (!this.customNetworks[modelName]) {
-            this.customNetworks[modelName] = {};
+            if (!this.customNetworks[modelName]) {
+                this.customNetworks[modelName] = {};
+            }
+
+            if (!this.customNetworks[modelName][symbol]) {
+                this.customNetworks[modelName][symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
+            }
+
+            this.customNetworks[modelName][symbol].train(trainingSet, options);
         }
 
-        if (!this.customNetworks[modelName][symbol]) {
-            this.customNetworks[modelName][symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
-        }
-
-        this.customNetworks[modelName][symbol].train(trainingSet, options);
         return this.intradayScore(symbol,
-            trainingData.slice(Math.floor(options.trainingSize / 100 * trainingData.length),
+            trainingData.slice(0,
                 trainingData.length),
             this.customNetworks[modelName][symbol]);
     }
