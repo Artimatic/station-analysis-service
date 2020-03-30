@@ -82,7 +82,7 @@ class Precog {
             this.customNetworks[modelName][symbol].train(trainingSet, options);
         }
 
-        return this.intradayScore(symbol,
+        return this.intradayScore(symbol, modelName,
             trainingData.slice(0,
                 trainingData.length),
             this.customNetworks[modelName][symbol]);
@@ -138,8 +138,8 @@ class Precog {
         return scorekeeper;
     }
 
-    private intradayScore(symbol: string, scoringSet: TrainingData[], network) {
-        const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
+    private intradayScore(symbol: string, modelName: string, scoringSet: TrainingData[], network) {
+        const scorekeeper: Score = { symbol, algorithm: modelName, guesses: 0, correct: 0, score: 0 };
 
         for (let i = 0; i < scoringSet.length; i++) {
             if (scoringSet[i]) {

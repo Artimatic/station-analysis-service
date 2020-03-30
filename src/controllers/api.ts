@@ -99,7 +99,7 @@ export const customModel = (req: Request, res: Response) => {
   const modelName = requestBody.modelName;
   const trainingData = requestBody.trainingData;
   const trainingSize = requestBody.trainingSize;
-  console.log('==========Custom train==========');
+  console.log('==========Custom training==========');
   console.log('Date: ', new Date());
   console.log('Model Name: ', modelName);
   console.log('Stock: ', symbol);
