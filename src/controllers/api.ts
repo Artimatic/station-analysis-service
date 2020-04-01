@@ -134,9 +134,9 @@ export const activateCustomModel = (req: Request, res: Response) => {
   console.log(new Date(), requestBody);
   const prediction = Precog.activateCustom(requestBody.symbol, requestBody.modelName, requestBody.input, requestBody.round);
 
-  savePrediction(requestBody.symbol, 
-    requestBody.modelName, 
-    requestBody.to ? new Date(requestBody.to) : new Date(), 
+  savePrediction(requestBody.symbol,
+    requestBody.modelName,
+    requestBody.to ? new Date(requestBody.to) : new Date(),
     prediction);
 
   console.log('Prediction: ', prediction);
@@ -149,11 +149,11 @@ export const activateV2Network = (req: Request, res: Response) => {
   console.log(new Date(), requestBody);
   const prediction = Precog.activate(requestBody.symbol, requestBody.input, requestBody.round, true);
 
-  savePrediction(requestBody.symbol, 
-    requestBody.modelName, 
-    requestBody.to ? new Date(requestBody.to) : new Date(), 
+  savePrediction(requestBody.symbol,
+    requestBody.modelName,
+    requestBody.to ? new Date(requestBody.to) : new Date(),
     prediction);
-    
+
   console.log('Prediction: ', prediction);
 
   res.send(prediction);
