@@ -7,6 +7,20 @@ import { Query } from '../shared/models/query.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
 import configurations from '../configurations';
 
+function savePrediction(symbol: string, modelName: string, date: Date, prediction) {
+  request.post({
+    uri: configurations.apps.goliath + 'precog/prediction',
+    json: true,
+    gzip: true,
+    body: {
+      symbol,
+      modelName,
+      date: date.toISOString(),
+      results: [prediction]
+    }
+  });
+}
+
 export const getApi = (req: Request, res: Response) => {
   const requestQuery: Query = req.query;
   console.log(new Date(), requestQuery);
@@ -44,16 +58,7 @@ export const activateNetwork = (req: Request, res: Response) => {
   const prediction = Precog.activate(requestBody.symbol, requestBody.input, requestBody.round);
 
   const date = new Date(requestBody.to);
-  request.post({
-    uri: configurations.apps.goliath + 'precog/prediction',
-    json: true,
-    gzip: true,
-    body: {
-      symbol: requestBody.symbol,
-      date: date.toISOString(),
-      results: [prediction]
-    }
-  });
+  savePrediction(requestBody.symbol, '', date, prediction);
   console.log('Prediction: ', prediction);
 
   res.send(prediction);
@@ -129,15 +134,11 @@ export const activateCustomModel = (req: Request, res: Response) => {
   console.log(new Date(), requestBody);
   const prediction = Precog.activateCustom(requestBody.symbol, requestBody.modelName, requestBody.input, requestBody.round);
 
-  request.post({
-    uri: configurations.apps.goliath + 'precog/prediction',
-    json: true,
-    gzip: true,
-    body: {
-      symbol: requestBody.symbol + '_intraday',
-      results: [prediction]
-    }
-  });
+  savePrediction(requestBody.symbol, 
+    requestBody.modelName, 
+    requestBody.to ? new Date(requestBody.to) : new Date(), 
+    prediction);
+
   console.log('Prediction: ', prediction);
 
   res.send(prediction);
@@ -148,17 +149,11 @@ export const activateV2Network = (req: Request, res: Response) => {
   console.log(new Date(), requestBody);
   const prediction = Precog.activate(requestBody.symbol, requestBody.input, requestBody.round, true);
 
-  const date = new Date(requestBody.to);
-  request.post({
-    uri: configurations.apps.goliath + 'precog/prediction',
-    json: true,
-    gzip: true,
-    body: {
-      symbol: requestBody.symbol,
-      date: date.toISOString(),
-      results: [prediction]
-    }
-  });
+  savePrediction(requestBody.symbol, 
+    requestBody.modelName, 
+    requestBody.to ? new Date(requestBody.to) : new Date(), 
+    prediction);
+    
   console.log('Prediction: ', prediction);
 
   res.send(prediction);
