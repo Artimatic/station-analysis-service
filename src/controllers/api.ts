@@ -7,7 +7,8 @@ import { Query } from '../shared/models/query.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
 import configurations from '../configurations';
 
-function savePrediction(symbol: string, modelName: string, date: Date, prediction) {
+export const savePrediction = (symbol: string, modelName: string, date: Date, prediction) => {
+  console.log('Saving prediction to: ', symbol, modelName);
   request.post({
     uri: configurations.apps.goliath + 'precog/prediction',
     json: true,
@@ -19,7 +20,7 @@ function savePrediction(symbol: string, modelName: string, date: Date, predictio
       results: [prediction]
     }
   });
-}
+};
 
 export const getApi = (req: Request, res: Response) => {
   const requestQuery: Query = req.query;
@@ -125,6 +126,11 @@ export const customModel = (req: Request, res: Response) => {
     testResults.push(Precog.testIntradayModels(symbol, modelName, trainingData, option));
   }
   console.log('==========END==========');
+  savePrediction(requestBody.symbol,
+    requestBody.modelName,
+    requestBody.to ? new Date(requestBody.to) : new Date(),
+    testResults[0]);
+
 
   res.send(testResults);
 };

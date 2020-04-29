@@ -1,8 +1,8 @@
 import express from 'express';
+import { urlencoded, json } from 'express';
 import compression from 'compression';  // compresses requests
 import session from 'express-session';
 import bodyParser from 'body-parser';
-import logger from './util/logger';
 import lusca from 'lusca';
 import dotenv from 'dotenv';
 import mongo from 'connect-mongo';
@@ -41,9 +41,13 @@ app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, '../views'));
 app.set('view engine', 'pug');
 app.use(compression());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 app.use(expressValidator());
+
+app.use(json({ limit: '50mb' }));
+app.use(urlencoded({ extended: true, limit: '50mb' }));
+
 app.use(session({
   resave: true,
   saveUninitialized: true,
@@ -91,6 +95,7 @@ app.post('/api/activate-custom', apiController.activateCustomModel);
 app.post('/api/activate', apiController.activateNetwork);
 app.post('/api/v2/activate', apiController.activateV2Network);
 app.get('/api/train-model', machineLearningController.trainModelV2);
+app.post('/api/tensor/train-model', machineLearningController.customModel);
 
 app.get(
   '/health',

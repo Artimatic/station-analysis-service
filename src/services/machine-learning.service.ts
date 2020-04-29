@@ -114,10 +114,15 @@ class MachineLearningService {
       modelParams.outputs.length);
 
     predictions.forEach((prediction: number, idx) => {
-      if (Math.round(prediction) === Math.round(actual[idx])) {
-        scorekeeper.correct++;
+      const pred = Math.round(prediction);
+      console.log('Prediction: ', pred, actual[idx]);
+
+      if (pred === 1) {
+        if (pred === Math.round(actual[idx])) {
+          scorekeeper.correct++;
+        }
+        scorekeeper.guesses++;
       }
-      scorekeeper.guesses++;
     });
 
     scorekeeper.score = scorekeeper.correct / scorekeeper.guesses;
