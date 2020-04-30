@@ -1,4 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
+import _ from 'lodash';
 import { Score } from '../shared/models/score.interface';
 
 export interface ModelParams {
@@ -93,7 +94,7 @@ class MachineLearningService {
     return { model: model, stats: hist };
   }
 
-  makePredictions(inputs, model) {
+  async makePredictions(inputs, model) {
     // let X = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
     if (model) {
       const predictedResults = model.predict(tf.tensor2d(inputs, [inputs.length, inputs[0].length]).div(tf.scalar(10))).mul(10);
@@ -103,22 +104,44 @@ class MachineLearningService {
     }
   }
 
+  // async score(modelParams: ModelParams) {
+  //   const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
 
-  score(modelParams: ModelParams) {
+  //   for (let i = Math.floor(modelParams.trainingSize / 100 * modelParams.outputs.length); i < modelParams.inputs.length; i++) {
+  //     const startingIdx = i - 30 > 0 ? i - 30 : 0;
+  //     const inputs = modelParams.inputs.slice(startingIdx, i);
+
+  //     const prediction = await this.makePredictions(inputs, this.trainedModels[modelParams.name]);
+  //     const roundedPrediction = _.round(Number(prediction[0]), 2);
+
+  //     const actual = _.round(modelParams.outputs[i][0], 2);
+  //     console.log('Prediction: ', roundedPrediction, actual);
+
+  //     if (roundedPrediction === actual) {
+  //       scorekeeper.correct++;
+  //     }
+  //     scorekeeper.guesses++;
+  //   }
+
+  //   scorekeeper.score = scorekeeper.correct / scorekeeper.guesses;
+  //   return scorekeeper;
+  // }
+
+  async score(modelParams: ModelParams) {
     const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
 
-    const predictions = this.makePredictions(modelParams.inputs.slice(Math.floor(modelParams.trainingSize / 100 * modelParams.inputs.length),
+    const predictions = await this.makePredictions(modelParams.inputs.slice(Math.floor(modelParams.trainingSize / 100 * modelParams.inputs.length),
       modelParams.inputs.length), this.trainedModels[modelParams.name]);
 
     const actual = modelParams.outputs.slice(Math.floor(modelParams.trainingSize / 100 * modelParams.outputs.length),
       modelParams.outputs.length);
 
-    predictions.forEach((prediction: number, idx) => {
-      const pred = Math.round(prediction);
-      console.log('Prediction: ', pred, actual[idx]);
+    predictions.forEach(async (prediction, idx) => {
+      const pred = _.round(Number(prediction), 2);
+      console.log('Prediction: ', prediction, actual[idx]);
 
-      if (pred === 1) {
-        if (pred === Math.round(actual[idx])) {
+      if (pred > 0.5) {
+        if (pred === _.round(actual[idx], 2)) {
           scorekeeper.correct++;
         }
         scorekeeper.guesses++;

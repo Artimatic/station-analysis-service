@@ -67,7 +67,7 @@ export const customModel = async (req: Request, res: Response) => {
     outputs: [],
     trainingSize: trainingSize || 7,
     windowSize: trainingData[0].input.length,
-    epochs: requestBody.epochs || 100,
+    epochs: requestBody.epochs || 10,
     learningRate: 0.01,
     layers: 6
   };
@@ -86,17 +86,26 @@ export const customModel = async (req: Request, res: Response) => {
   const score = await MachineLearningService.score(params);
   console.log(score);
 
-  console.log('==========END==========');
+  const nextPrediction = await MachineLearningService.makePredictions(
+    [trainingData[trainingData.length - 1].input], MachineLearningService.trainedModels[requestBody.modelName]);
+
+  console.log('last input: ', trainingData[trainingData.length - 1].input);
+  console.log('next prediction: ', nextPrediction);
+
   // apiController.savePrediction(requestBody.symbol,
   //   requestBody.modelName,
   //   requestBody.to ? new Date(requestBody.to) : new Date(),
-  //   testResults[0]);
+  //   nextPrediction);
+  console.log('==========END==========');
 
   const results = {
-    score,
+    symbol: requestBody.symbol,
+    algorithm: requestBody.modelName,
+    nextOutput: nextPrediction,
+    ...score,
     inputs: params.inputs,
     outputs: params.outputs
   };
 
-  res.send(results);
+  res.send([results]);
 };

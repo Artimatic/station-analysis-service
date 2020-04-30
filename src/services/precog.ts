@@ -2,7 +2,7 @@ import * as neataptic from 'neataptic';
 import { TrainingData } from '../shared/models/training-data.interface';
 import { Score } from '../shared/models/score.interface';
 import { NetworkOptions } from '../shared/models/network-options.interface';
-import * as _ from 'lodash';
+import _ from 'lodash';
 
 const defaultOptions: NetworkOptions = {
     log: 10000,
@@ -140,23 +140,22 @@ class Precog {
 
     private intradayScore(symbol: string, modelName: string, scoringSet: TrainingData[], network) {
         const scorekeeper: Score = { symbol, algorithm: modelName, guesses: 0, correct: 0, score: 0 };
-
         for (let i = 0; i < scoringSet.length; i++) {
             if (scoringSet[i]) {
                 const actual = scoringSet[i].output;
                 const input = scoringSet[i].input;
                 if (input) {
                     const rawPrediction = network.activate(input);
-                    const prediction = Math.round(rawPrediction);
+                    const prediction = _.round(rawPrediction);
 
-                    if (actual && prediction === 1) {
+                   if (actual && prediction === 1) {
                         if (i % 100 === 0) {
                             console.log('Input: ', input);
-                            console.log(`${i}: actual: ${actual}, prediction: ${prediction}`);
+                            console.log(`${i}: actual: ${actual}, prediction: ${rawPrediction}`);
                         }
 
                         scorekeeper.guesses++;
-                        if (actual[0] === prediction) {
+                        if (_.round(actual[0]) === prediction) {
                             scorekeeper.correct++;
                         }
                     }
