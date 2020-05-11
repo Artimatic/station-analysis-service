@@ -71,13 +71,7 @@ class Precog {
             console.log('Network settings: ', options);
             console.log('Training data size: ', trainingData.length);
 
-            if (!this.customNetworks[modelName]) {
-                this.customNetworks[modelName] = {};
-            }
-
-            if (!this.customNetworks[modelName][symbol]) {
-                this.customNetworks[modelName][symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
-            }
+            this.customNetworks[modelName][symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
 
             this.customNetworks[modelName][symbol].train(trainingSet, options);
         }
