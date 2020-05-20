@@ -80,12 +80,17 @@ export const testModel = (req: Request, res: Response) => {
     }
   };
 
+  let trainingSize = 0.7;
+  if (requestQuery.trainingSize) {
+    trainingSize = Number(requestQuery.trainingSize);
+  }
+
   return request(options).then((results) => {
     const testResults = [];
     const rates = [0.01];
     for (let rate = 0, end = rates.length; rate < end; rate++) {
       const option: NetworkOptions = {
-        trainingSize: 0.7,
+        trainingSize,
         log: 10000,
         iterations: 8000,
         error: 0.1,

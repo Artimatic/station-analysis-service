@@ -5,4 +5,5 @@ export interface Query {
     rate?: number;
     input?: any;
     modelName?: string;
+    trainingSize?: string;
 }
