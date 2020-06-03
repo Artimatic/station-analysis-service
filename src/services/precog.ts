@@ -71,10 +71,13 @@ class Precog {
             console.log('Network settings: ', options);
             console.log('Training data size: ', trainingData.length);
 
-            this.customNetworks[modelName] = {};
+            if (!this.customNetworks[modelName]) {
+                this.customNetworks[modelName] = {};
+            }
             this.customNetworks[modelName][symbol] = new neataptic.architect.LSTM(trainingData[0].input.length, 6, trainingData[0].output.length);
 
             this.customNetworks[modelName][symbol].train(trainingSet, options);
+            console.log('Created model for ', modelName + symbol);
         }
 
         return this.intradayScore(symbol, modelName,
@@ -143,7 +146,7 @@ class Precog {
                     const rawPrediction = network.activate(input);
                     const prediction = _.round(rawPrediction);
 
-                   if (actual && prediction === 1) {
+                    if (actual && prediction === 1) {
                         if (i % 100 === 0) {
                             console.log('Input: ', input);
                             console.log(`${i}: actual: ${actual}, prediction: ${rawPrediction}`);
