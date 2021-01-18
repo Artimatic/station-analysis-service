@@ -4,4 +4,5 @@ export interface NetworkOptions {
     error: number;
     clear: boolean;
     rate: number;
+    trainingSize: number;
 }

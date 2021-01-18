@@ -4,4 +4,6 @@ export interface Query {
     from: string;
     rate?: number;
     input?: any;
+    modelName?: string;
+    trainingSize?: string;
 }

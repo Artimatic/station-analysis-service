@@ -6,6 +6,7 @@ export default {
     // Server port
     port: process.env.PORT || _.get(configurations, 'default.port', _.get(configurations, 'port', null)),
     apps: {
-        goliath: _.get(configurations, 'default.goliathUrl', _.get(configurations, 'goliathUrl', null))
+        goliath: _.get(configurations, 'default.goliathUrl', _.get(configurations, 'goliathUrl', null)),
+        main: _.get(configurations, 'default.mainUrl', _.get(configurations, 'mainUrl', null))
     }
 };
