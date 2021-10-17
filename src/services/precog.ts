@@ -100,6 +100,17 @@ class Precog {
             this.v2Network[symbol]);
     }
 
+    public hasCustomModel(symbol: string) {
+        return Boolean(this.v2Network[symbol]);
+    }
+
+    public scoreCustomModel(symbol: string, trainingData: TrainingData[]) {
+        return this.score(symbol,
+            trainingData.slice(0,
+                trainingData.length),
+            this.v2Network[symbol]);
+    }
+
     private score(symbol: string, scoringSet: TrainingData[], network) {
         const scorekeeper: Score = { guesses: 0, correct: 0, score: 0 };
 
@@ -137,19 +148,20 @@ class Precog {
     }
 
     private intradayScore(symbol: string, modelName: string, scoringSet: TrainingData[], network) {
-        const scorekeeper: Score = { symbol, algorithm: modelName, guesses: 0, correct: 0, score: 0 };
+        const scorekeeper: Score = { symbol, algorithm: modelName, guesses: 0, correct: 0, score: 0, predictionHistory: [] };
         for (let i = 0; i < scoringSet.length; i++) {
             if (scoringSet[i]) {
                 const actual = scoringSet[i].output;
                 const input = scoringSet[i].input;
                 if (input) {
                     const rawPrediction = network.activate(input);
-                    const prediction = _.round(rawPrediction);
+                    const prediction = _.round(rawPrediction[0]);
+                    const rawPredictionRounded = _.round(rawPrediction[0], 3);
 
-                    if (actual && prediction === 1) {
+                    if (actual && prediction === 1 || i === scoringSet.length - 1) {
                         if (i % 100 === 0) {
                             console.log('Input: ', input);
-                            console.log(`${i}: actual: ${actual}, prediction: ${rawPrediction}`);
+                            console.log(`${i}: actual: ${actual}, prediction: ${rawPredictionRounded}`);
                         }
 
                         scorekeeper.guesses++;
@@ -158,17 +170,16 @@ class Precog {
                         }
                     }
 
-                    if (!actual) {
-                        scorekeeper.nextOutput = prediction;
-                        console.log(`prediction: ${prediction}`);
-                    }
+                    scorekeeper.nextOutput = rawPredictionRounded;
+                    scorekeeper.predictionHistory.push({ date: scoringSet[i].date, prediction: rawPrediction[0] });
                 }
             }
         }
 
         scorekeeper.score = scorekeeper.correct / scorekeeper.guesses;
 
-        console.log('Score: ', scorekeeper);
+        console.log(' - Score - ');
+        console.log(`algorithm: ${scorekeeper.algorithm}, guesses: ${scorekeeper.guesses}, correct: ${scorekeeper.correct}, score: ${scorekeeper.score}`);
         return scorekeeper;
     }
 }

@@ -104,6 +104,23 @@ export const testModel = (req: Request, res: Response) => {
   });
 };
 
+export const scoreCustomModel = (req: Request, res: Response) => {
+  const requestBody = req.body;
+  const symbol = requestBody.symbol;
+  const trainingData = requestBody.trainingData;
+
+  if (Precog.hasCustomModel(symbol)) {
+    res.status(404).json({
+      status: false,
+      error: 'Model not found'
+    });
+  } else {
+    const testResults = [];
+    testResults.push(Precog.scoreCustomModel(symbol, JSON.parse(trainingData)));
+    res.send(testResults);
+  }
+};
+
 export const customModel = (req: Request, res: Response) => {
   const requestBody = req.body;
   const symbol = requestBody.symbol;
@@ -115,6 +132,8 @@ export const customModel = (req: Request, res: Response) => {
   console.log('Model Name: ', modelName);
   console.log('Stock: ', symbol);
   console.log('Data Dates: ', trainingData[0].date, ' - ', trainingData[trainingData.length - 1].date);
+  console.log('Example training data: ', trainingData[0], trainingData[trainingData.length - 1]);
+  console.log('Data size: ', trainingData.length);
 
   const testResults = [];
   const rates = [0.01];

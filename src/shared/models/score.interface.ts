@@ -5,4 +5,10 @@ export interface Score {
     correct: number;
     score: number;
     nextOutput?: number;
+    predictionHistory?: PredictionHistory[];
+}
+
+export interface PredictionHistory {
+    date: string;
+    prediction: number;
 }
