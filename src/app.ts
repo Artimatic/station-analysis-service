@@ -50,6 +50,7 @@ app.use(
  */
 app.get('/api', apiController.getApi);
 app.get('/api/test-model', apiController.testModel);
+app.post('/api/score-custom', apiController.scoreCustomModel);
 app.post('/api/train-custom', apiController.customModel);
 app.post('/api/activate-custom', apiController.activateCustomModel);
 app.post('/api/activate', apiController.activateNetwork);
