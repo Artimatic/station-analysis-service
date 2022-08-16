@@ -165,8 +165,12 @@ class Precog {
                         }
 
                         scorekeeper.guesses++;
-                        if (_.round(actual[0]) === prediction) {
-                            scorekeeper.correct++;
+                        if (actual) {
+                            if (_.round(actual[0]) === prediction) {
+                                scorekeeper.correct++;
+                            }
+                        } else {
+                            console.log('actual: ', actual);
                         }
                     }
 
