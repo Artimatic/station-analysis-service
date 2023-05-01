@@ -128,7 +128,7 @@ export const customModel = (req: Request, res: Response) => {
   const trainingData = requestBody.trainingData;
   const trainingSize = requestBody.trainingSize;
   console.log('==========Custom training==========');
-  console.log('Date: ', new Date());
+  console.log('Start Time: ', new Date());
   console.log('Model Name: ', modelName);
   console.log('Stock: ', symbol);
   console.log('Data Dates: ', trainingData[0].date, ' - ', trainingData[trainingData.length - 1].date);
@@ -155,6 +155,7 @@ export const customModel = (req: Request, res: Response) => {
     requestBody.to ? new Date(requestBody.to) : new Date(),
     testResults[0]);
 
+  console.log('Finished time: ', new Date());
 
   res.send(testResults);
 };
