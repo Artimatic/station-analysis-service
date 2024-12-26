@@ -9,17 +9,17 @@ import configurations from '../configurations';
 
 export const savePrediction = (symbol: string, modelName: string, date: Date, prediction) => {
   console.log('Saving prediction to: ', symbol, modelName);
-  request.post({
-    uri: configurations.apps.goliath + 'precog/prediction',
-    json: true,
-    gzip: true,
-    body: {
-      symbol,
-      modelName,
-      date: date.toISOString(),
-      results: [prediction]
-    }
-  });
+  // request.post({
+  //   uri: configurations.apps.goliath + 'precog/prediction',
+  //   json: true,
+  //   gzip: true,
+  //   body: {
+  //     symbol,
+  //     modelName,
+  //     date: date.toISOString(),
+  //     results: [prediction]
+  //   }
+  // });
 };
 
 export const getApi = (req: Request, res: Response) => {
