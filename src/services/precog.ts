@@ -175,7 +175,7 @@ class Precog {
                     }
 
                     scorekeeper.nextOutput = rawPredictionRounded;
-                    scorekeeper.predictionHistory.push({ date: scoringSet[i].date, prediction: rawPrediction[0] });
+                    scorekeeper.predictionHistory.push({ date: scoringSet[i].date, prediction: rawPrediction[0], actual: actual[0] });
                 }
             }
         }

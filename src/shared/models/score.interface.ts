@@ -11,4 +11,5 @@ export interface Score {
 export interface PredictionHistory {
     date: string;
     prediction: number;
+    actual: number;
 }

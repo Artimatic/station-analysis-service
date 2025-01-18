@@ -1,6 +1,5 @@
 'use strict';
 
-import request from 'request-promise';
 import { Response, Request } from 'express';
 import Precog from './../services/precog';
 import { Query } from '../shared/models/query.interface';
@@ -22,36 +21,36 @@ export const savePrediction = (symbol: string, modelName: string, date: Date, pr
   // });
 };
 
-export const getApi = (req: Request, res: Response) => {
-  const requestQuery: Query = req.query;
-  console.log(new Date(), requestQuery);
-  const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
-    `&to=${requestQuery.to}&from=${requestQuery.from}&save=false&useClosePrice=false`;
+// export const getApi = (req: Request, res: Response) => {
+//   const requestQuery: Query = req.query;
+//   console.log(new Date(), requestQuery);
+//   const query = `${configurations.apps.goliath}backtest/train?ticker=${requestQuery.symbol}` +
+//     `&to=${requestQuery.to}&from=${requestQuery.from}&save=false&useClosePrice=false`;
 
-  const options = {
-    method: 'GET',
-    uri: query,
-    json: true
-  };
+//   const options = {
+//     method: 'GET',
+//     uri: query,
+//     json: true
+//   };
 
-  return request(options).then((results) => {
-    const testResults = [];
-    const rates = [0.01];
-    for (let rate = 0, end = rates.length; rate < end; rate++) {
-      const option: NetworkOptions = {
-        trainingSize: 0.7,
-        log: 10000,
-        iterations: 8000,
-        error: 0.1,
-        clear: true,
-        rate: rates[rate]
-      };
-      testResults.push(Precog.testLstm(requestQuery.symbol, results, option));
-    }
+//   return request(options).then((results) => {
+//     const testResults = [];
+//     const rates = [0.01];
+//     for (let rate = 0, end = rates.length; rate < end; rate++) {
+//       const option: NetworkOptions = {
+//         trainingSize: 0.7,
+//         log: 10000,
+//         iterations: 8000,
+//         error: 0.1,
+//         clear: true,
+//         rate: rates[rate]
+//       };
+//       testResults.push(Precog.testLstm(requestQuery.symbol, results, option));
+//     }
 
-    res.send(testResults);
-  });
-};
+//     res.send(testResults);
+//   });
+// };
 
 export const activateNetwork = (req: Request, res: Response) => {
   const requestBody = req.body;
@@ -65,44 +64,44 @@ export const activateNetwork = (req: Request, res: Response) => {
   res.send(prediction);
 };
 
-export const testModel = (req: Request, res: Response) => {
-  const requestQuery: Query = req.query;
-  console.log(new Date(), requestQuery);
-  const query = `${configurations.apps.main}api/machine-learning/train`;
+// export const testModel = (req: Request, res: Response) => {
+//   const requestQuery: Query = req.query;
+//   console.log(new Date(), requestQuery);
+//   const query = `${configurations.apps.main}api/machine-learning/train`;
 
-  const options = {
-    method: 'GET',
-    uri: query,
-    qs: {
-      symbol: requestQuery.symbol,
-      endDate: requestQuery.to,
-      startDate: requestQuery.from
-    }
-  };
+//   const options = {
+//     method: 'GET',
+//     uri: query,
+//     qs: {
+//       symbol: requestQuery.symbol,
+//       endDate: requestQuery.to,
+//       startDate: requestQuery.from
+//     }
+//   };
 
-  let trainingSize = 0.7;
-  if (requestQuery.trainingSize) {
-    trainingSize = Number(requestQuery.trainingSize);
-  }
+//   let trainingSize = 0.7;
+//   if (requestQuery.trainingSize) {
+//     trainingSize = Number(requestQuery.trainingSize);
+//   }
 
-  return request(options).then((results) => {
-    const testResults = [];
-    const rates = [0.01];
-    for (let rate = 0, end = rates.length; rate < end; rate++) {
-      const option: NetworkOptions = {
-        trainingSize,
-        log: 10000,
-        iterations: 8000,
-        error: 0.1,
-        clear: true,
-        rate: rates[rate]
-      };
-      testResults.push(Precog.testLstmClosePrice(requestQuery.symbol, JSON.parse(results), option));
-    }
+//   return request(options).then((results) => {
+//     const testResults = [];
+//     const rates = [0.01];
+//     for (let rate = 0, end = rates.length; rate < end; rate++) {
+//       const option: NetworkOptions = {
+//         trainingSize,
+//         log: 10000,
+//         iterations: 8000,
+//         error: 0.1,
+//         clear: true,
+//         rate: rates[rate]
+//       };
+//       testResults.push(Precog.testLstmClosePrice(requestQuery.symbol, JSON.parse(results), option));
+//     }
 
-    res.send(testResults);
-  });
-};
+//     res.send(testResults);
+//   });
+// };
 
 export const scoreCustomModel = (req: Request, res: Response) => {
   const requestBody = req.body;
