@@ -5,6 +5,7 @@ export interface ModelParams {
   name: string;
   inputs: number[][];
   outputs: number[];
+  dates: string[];
   trainingSize: number;
   windowSize: number;
   epochs: number;
@@ -112,12 +113,12 @@ class MachineLearningService {
     const actual = modelParams.outputs.slice(Math.floor(modelParams.trainingSize * modelParams.outputs.length),
       modelParams.outputs.length);
 
-    console.log('model name: ', modelParams.name);
+    const dates = modelParams.dates.slice(Math.floor(modelParams.trainingSize * modelParams.inputs.length));
     const nextPredictions = [];
     predictions.forEach(async (prediction, idx) => {
       const pred = Math.round(Number(prediction));
       console.log('Prediction: ', prediction, '=>', pred, 'Actual:', actual[idx]);
-      nextPredictions.push({prediction, actual: actual[idx]});
+      nextPredictions.push({date: dates[idx], prediction, actual: actual[idx]});
       if (pred > 0.5) {
         if (pred === Math.round(actual[idx])) {
           scorekeeper.correct++;

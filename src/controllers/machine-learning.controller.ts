@@ -64,6 +64,7 @@ export const customModel = async (req: Request, res: Response) => {
     name: name,
     inputs: [],
     outputs: [],
+    dates: [],
     trainingSize: trainingSize || 0.7,
     windowSize: trainingData[0].input.length,
     epochs: requestBody.epochs || 11,
@@ -74,6 +75,7 @@ export const customModel = async (req: Request, res: Response) => {
   trainingData.forEach((daily) => {
     params.inputs.push(daily.input);
     params.outputs.push(daily.output);
+    params.dates.push(daily.date);
   });
 
   if (!scoreOnly) {
