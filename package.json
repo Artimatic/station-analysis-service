@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Artimatic/armadillo#readme",
   "dependencies": {
-    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs": "1.7.4",
     "async": "^3.2.6",
     "body-parser": "^1.18.2",
     "compression": "^1.7.1",
